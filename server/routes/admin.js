@@ -15,9 +15,15 @@ router.post('/photos', uploadController.createPhotoWithUpload)
 router.put('/photos/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const updates = req.body
+    const updates = { ...req.body }
 
-    const photo = await Photo.findByIdAndUpdate(id, updates, { new: true })
+    // If date is being updated, recalculate year
+    if (updates.date) {
+      const dateObj = new Date(updates.date)
+      updates.year = dateObj.getFullYear()
+    }
+
+    const photo = await Photo.findByIdAndUpdate(id, updates, { new: true, runValidators: true })
     if (!photo) {
       return res.status(404).json({ message: 'Photo not found' })
     }

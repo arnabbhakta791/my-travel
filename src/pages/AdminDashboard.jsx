@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Form, Input, Checkbox, Upload, Typography, message, Table, Space } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Checkbox, Upload, Typography, message, Table, Space, Modal } from 'antd'
+import { UploadOutlined, EditOutlined } from '@ant-design/icons'
 import { apiClient } from '../api/client'
 import { logout } from '../api/auth'
 
@@ -12,6 +12,10 @@ const AdminDashboard = () => {
   const [photos, setPhotos] = useState([])
   const [tableLoading, setTableLoading] = useState(false)
   const [fileList, setFileList] = useState([])
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [editingPhoto, setEditingPhoto] = useState(null)
+  const [editForm] = Form.useForm()
+  const [editLoading, setEditLoading] = useState(false)
   const navigate = useNavigate()
 
   const fetchPhotos = async () => {
@@ -86,6 +90,63 @@ const AdminDashboard = () => {
     }
   }
 
+  const handleEdit = (photo) => {
+    setEditingPhoto(photo)
+    // Format date for input (YYYY-MM-DD)
+    const dateValue = photo.date ? new Date(photo.date).toISOString().split('T')[0] : ''
+    // Format tags as comma-separated string
+    const tagsValue = photo.tags && Array.isArray(photo.tags) ? photo.tags.join(', ') : ''
+    
+    editForm.setFieldsValue({
+      title: photo.title,
+      description: photo.description || '',
+      location: photo.location || '',
+      country: photo.country || '',
+      date: dateValue,
+      category: photo.category || '',
+      tags: tagsValue,
+      featured: photo.featured || false,
+    })
+    setEditModalVisible(true)
+  }
+
+  const handleEditCancel = () => {
+    setEditModalVisible(false)
+    setEditingPhoto(null)
+    editForm.resetFields()
+  }
+
+  const handleEditSubmit = async (values) => {
+    if (!editingPhoto) return
+
+    try {
+      setEditLoading(true)
+      const updateData = {
+        title: values.title,
+        description: values.description || '',
+        location: values.location || '',
+        country: values.country || '',
+        date: values.date || undefined,
+        category: values.category || '',
+        tags: values.tags ? values.tags.split(',').map(t => t.trim()).filter(t => t) : [],
+        featured: values.featured || false,
+      }
+
+      await apiClient.put(`/admin/photos/${editingPhoto._id}`, updateData)
+      message.success('Photo updated successfully')
+      setEditModalVisible(false)
+      setEditingPhoto(null)
+      editForm.resetFields()
+      fetchPhotos()
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Update failed', err)
+      message.error(err?.response?.data?.message || 'Failed to update photo')
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
   const columns = [
     {
       title: 'Title',
@@ -113,6 +174,14 @@ const AdminDashboard = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
+          <Button 
+            type="primary" 
+            size="small" 
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
           <Button danger size="small" onClick={() => handleDelete(record._id)}>
             Delete
           </Button>
@@ -199,6 +268,72 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Photo Modal */}
+      <Modal
+        title="Edit Photo Details"
+        open={editModalVisible}
+        onCancel={handleEditCancel}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={editForm}
+          layout="vertical"
+          onFinish={handleEditSubmit}
+          className="mt-4"
+        >
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: 'Please enter a title' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label="Description" name="description">
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item label="Location" name="location">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Country" name="country">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Date" name="date">
+            <Input type="date" />
+          </Form.Item>
+          <Form.Item label="Category" name="category">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Tags (comma separated)" name="tags">
+            <Input placeholder="e.g., mountain, sunrise, nature" />
+          </Form.Item>
+          <Form.Item name="featured" valuePropName="checked">
+            <Checkbox>Featured</Checkbox>
+          </Form.Item>
+          {editingPhoto && (
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm mb-2">Current Image:</p>
+              <img 
+                src={editingPhoto.imageUrl} 
+                alt={editingPhoto.title}
+                className="w-full max-w-xs h-48 object-cover rounded"
+              />
+              <p className="text-gray-500 text-xs mt-2">
+                Note: Image cannot be changed. To change the image, delete and re-upload.
+              </p>
+            </div>
+          )}
+          <Form.Item className="mb-0">
+            <Space>
+              <Button type="primary" htmlType="submit" loading={editLoading}>
+                Update Photo
+              </Button>
+              <Button onClick={handleEditCancel}>Cancel</Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }
