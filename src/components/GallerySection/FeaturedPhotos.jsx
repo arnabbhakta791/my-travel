@@ -19,7 +19,7 @@ const FeaturedPhotos = ({ photos }) => {
         className="featured-carousel"
       >
         {featuredPhotos.map((photo) => (
-          <div key={photo.id} className="relative">
+          <div key={photo._id || photo.id} className="relative">
             <div className="relative h-96 md:h-[500px] overflow-hidden rounded-lg">
               <img
                 src={photo.imageUrl}
