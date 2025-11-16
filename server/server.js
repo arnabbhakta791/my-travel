@@ -20,7 +20,38 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Basic middleware
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }))
+// app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }))
+// app.use(express.json())
+
+// CORS configuration - normalize origins to handle trailing slashes
+const normalizeOrigin = (origin) => {
+  if (!origin) return null
+  return origin.replace(/\/$/, '') // Remove trailing slash
+}
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true)
+      
+      const normalizedOrigin = normalizeOrigin(origin)
+      const allowedOrigin = normalizeOrigin(process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+      
+      // Also allow localhost for development
+      const isLocalhost = normalizedOrigin?.includes('localhost')
+      const isAllowed = normalizedOrigin === allowedOrigin || isLocalhost
+      
+      if (isAllowed) {
+        callback(null, true)
+      } else {
+        console.log('CORS blocked:', normalizedOrigin, 'Expected:', allowedOrigin)
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
+  })
+)
 app.use(express.json())
 
 // API routes
