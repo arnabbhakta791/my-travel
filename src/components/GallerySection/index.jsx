@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import FeaturedPhotos from './FeaturedPhotos'
 import FilterBar from './FilterBar'
 import PhotoGrid from './PhotoGrid'
-import { photos, getUniqueLocations, getUniqueCategories, getUniqueYears } from '../../data/photos'
+import { apiClient } from '../../api/client'
 
 const GallerySection = () => {
   const [filters, setFilters] = useState({
@@ -11,9 +11,40 @@ const GallerySection = () => {
     year: null,
   })
 
-  const locations = getUniqueLocations()
-  const categories = getUniqueCategories()
-  const years = getUniqueYears()
+  const [photos, setPhotos] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const res = await apiClient.get('/photos')
+        setPhotos(res.data.items || [])
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load photos', err)
+        setError('Failed to load photos')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPhotos()
+  }, [])
+
+  const locations = useMemo(() => {
+    return [...new Set(photos.map((p) => p.country))].sort()
+  }, [photos])
+
+  const categories = useMemo(() => {
+    return [...new Set(photos.map((p) => p.category))].sort()
+  }, [photos])
+
+  const years = useMemo(() => {
+    return [...new Set(photos.map((p) => p.year))].sort((a, b) => b - a)
+  }, [photos])
 
   const filteredPhotos = useMemo(() => {
     return photos.filter((photo) => {
@@ -22,7 +53,7 @@ const GallerySection = () => {
       if (filters.year && photo.year !== filters.year) return false
       return true
     })
-  }, [filters])
+  }, [filters, photos])
 
   return (
     <section id="gallery" className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
@@ -44,20 +75,33 @@ const GallerySection = () => {
           years={years}
         />
 
-        <FeaturedPhotos photos={filteredPhotos} />
+        {loading && (
+          <div className="text-center py-10 text-gray-400">Loading photos...</div>
+        )}
 
-        <div className="mb-6">
-          <p className="text-gray-400">
-            Showing {filteredPhotos.length} {filteredPhotos.length === 1 ? 'photo' : 'photos'}
-          </p>
-        </div>
+        {error && !loading && (
+          <div className="text-center py-10 text-red-400">{error}</div>
+        )}
 
-        {filteredPhotos.length > 0 ? (
-          <PhotoGrid photos={filteredPhotos} />
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-gray-400 text-xl">No photos found matching your filters.</p>
-          </div>
+        {!loading && !error && (
+          <>
+            <FeaturedPhotos photos={filteredPhotos} />
+
+            <div className="mb-6">
+              <p className="text-gray-400">
+                Showing {filteredPhotos.length}{' '}
+                {filteredPhotos.length === 1 ? 'photo' : 'photos'}
+              </p>
+            </div>
+
+            {filteredPhotos.length > 0 ? (
+              <PhotoGrid photos={filteredPhotos} />
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-gray-400 text-xl">No photos found matching your filters.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

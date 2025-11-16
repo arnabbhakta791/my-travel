@@ -1,5 +1,5 @@
 import { Carousel } from 'antd'
-import { LeftOutlined, RightOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import { EnvironmentOutlined } from '@ant-design/icons'
 
 const FeaturedPhotos = ({ photos }) => {
   const featuredPhotos = photos.filter(photo => photo.featured)
@@ -16,8 +16,6 @@ const FeaturedPhotos = ({ photos }) => {
         autoplaySpeed={4000}
         dots={true}
         arrows={true}
-        prevArrow={<LeftOutlined />}
-        nextArrow={<RightOutlined />}
         className="featured-carousel"
       >
         {featuredPhotos.map((photo) => (

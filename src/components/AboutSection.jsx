@@ -87,7 +87,7 @@ const AboutSection = () => {
         <div className="mt-16 text-center">
           <div className="inline-block bg-gray-900 rounded-lg p-8 border border-gray-700">
             <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+              src="profile-pic.jpg"
               alt="Traveler"
               className="w-48 h-48 rounded-full object-cover mx-auto mb-4 border-4 border-travel-blue-base"
             />

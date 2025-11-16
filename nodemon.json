@@ -1,0 +1,10 @@
+{
+  "watch": ["server"],
+  "ext": "js,json",
+  "ignore": ["node_modules", "src", "public", "*.test.js"],
+  "exec": "node server/server.js",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
+
