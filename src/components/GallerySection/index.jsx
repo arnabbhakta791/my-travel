@@ -35,15 +35,15 @@ const GallerySection = () => {
   }, [])
 
   const locations = useMemo(() => {
-    return [...new Set(photos.map((p) => p.country))].sort()
+    return [...new Set(photos.map((p) => p.country).filter((loc) => loc != null && loc !== ''))].sort()
   }, [photos])
 
   const categories = useMemo(() => {
-    return [...new Set(photos.map((p) => p.category))].sort()
+    return [...new Set(photos.map((p) => p.category).filter((cat) => cat != null && cat !== ''))].sort()
   }, [photos])
 
   const years = useMemo(() => {
-    return [...new Set(photos.map((p) => p.year))].sort((a, b) => b - a)
+    return [...new Set(photos.map((p) => p.year).filter((year) => year != null && year !== '' && !isNaN(year)))].sort((a, b) => b - a)
   }, [photos])
 
   const filteredPhotos = useMemo(() => {

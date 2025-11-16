@@ -20,7 +20,7 @@ const AboutSection = () => {
               <GlobalOutlined className="text-5xl text-travel-blue-light mb-4" />
               <Statistic
                 title={<span className="text-gray-300">Countries Visited</span>}
-                value={25}
+                value={2}
                 valueStyle={{ color: '#60a5fa', fontSize: '2.5rem', fontWeight: 'bold' }}
               />
             </div>
@@ -41,7 +41,7 @@ const AboutSection = () => {
               <HeartOutlined className="text-5xl text-travel-earth-light mb-4" />
               <Statistic
                 title={<span className="text-gray-300">Years Traveling</span>}
-                value={8}
+                value={3}
                 suffix="+"
                 valueStyle={{ color: '#f59e0b', fontSize: '2.5rem', fontWeight: 'bold' }}
               />
@@ -49,37 +49,41 @@ const AboutSection = () => {
           </Col>
         </Row>
 
-        <Row gutter={[32, 32]}>
+        <Row gutter={[32, 32]} className="items-stretch">
           <Col xs={24} lg={12}>
-            <div className="bg-gray-900 rounded-lg p-8 border border-gray-700">
+            <div className="bg-gray-900 rounded-lg p-8 border border-gray-700 h-full flex flex-col">
               <h3 className="text-2xl font-bold text-white mb-4">My Story</h3>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                Travel has always been my greatest passion. What started as weekend trips to nearby
-                destinations has evolved into a lifelong journey of exploration and discovery. Through
-                my camera lens, I capture not just images, but emotions, stories, and the essence of
-                each place I visit.
-              </p>
-              <p className="text-gray-300 leading-relaxed">
-                From the snow-capped peaks of the Alps to the vibrant streets of Tokyo, from the
-                serene beaches of the Maldives to the bustling markets of Marrakech, each destination
-                has left an indelible mark on my soul. This gallery is a window into my adventures,
-                a collection of moments that tell the story of my travels.
-              </p>
+              <div className="flex-grow">
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  Travel has always been my greatest passion. What started as weekend trips to nearby
+                  destinations has evolved into a lifelong journey of exploration and discovery. Through
+                  my camera lens, I capture not just images, but emotions, stories, and the essence of
+                  each place I visit.
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  From the snow-capped peaks of the Alps to the vibrant streets of Tokyo, from the
+                  serene beaches of the Maldives to the bustling markets of Marrakech, each destination
+                  has left an indelible mark on my soul. This gallery is a window into my adventures,
+                  a collection of moments that tell the story of my travels.
+                </p>
+              </div>
             </div>
           </Col>
           <Col xs={24} lg={12}>
-            <div className="bg-gray-900 rounded-lg p-8 border border-gray-700">
+            <div className="bg-gray-900 rounded-lg p-8 border border-gray-700 h-full flex flex-col">
               <h3 className="text-2xl font-bold text-white mb-4">My Mission</h3>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                Through photography, I aim to inspire others to explore the world and appreciate its
-                incredible diversity. Every photograph represents a moment in time, a memory preserved,
-                and a story waiting to be told.
-              </p>
-              <p className="text-gray-300 leading-relaxed">
-                Whether it's the golden hour light on a mountain peak or the candid smile of a local
-                vendor, I believe that travel photography has the power to connect us, inspire
-                wanderlust, and remind us of the beauty that exists in every corner of our planet.
-              </p>
+              <div className="flex-grow">
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  Through photography, I aim to inspire others to explore the world and appreciate its
+                  incredible diversity. Every photograph represents a moment in time, a memory preserved,
+                  and a story waiting to be told.
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  Whether it's the golden hour light on a mountain peak or the candid smile of a local
+                  vendor, I believe that travel photography has the power to connect us, inspire
+                  wanderlust, and remind us of the beauty that exists in every corner of our planet.
+                </p>
+              </div>
             </div>
           </Col>
         </Row>

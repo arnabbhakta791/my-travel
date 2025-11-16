@@ -75,7 +75,7 @@ const Header = () => {
             <img 
               src="/my-logo.png" 
               alt="Arnab's Window Logo" 
-              className="h-20 w-30"
+              className="h-12 w-auto"
             />
           {/* </div> */}
           <Menu
