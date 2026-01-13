@@ -1,118 +1,92 @@
 import { useState } from 'react'
-import { Image, Modal } from 'antd'
-import { EyeOutlined, EnvironmentOutlined, CalendarOutlined, TagOutlined } from '@ant-design/icons'
+import { motion } from 'framer-motion'
+import { EnvironmentOutlined, CalendarOutlined, EyeOutlined } from '@ant-design/icons'
 
-const PhotoCard = ({ photo, span = 1 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
-  const showModal = () => {
-    setIsModalOpen(true)
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
+  const handleClick = () => {
+    onOpenLightbox?.(index)
   }
 
   return (
-    <>
-      <div
-        className={`group relative overflow-hidden rounded-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-          span > 1 ? 'md:col-span-2' : ''
-        }`}
-        onClick={showModal}
-      >
-        <div className="aspect-w-16 aspect-h-12 w-full h-64 md:h-80 overflow-hidden">
-          <img
-            src={photo.imageUrl}
-            alt={photo.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
-          />
-        </div>
-        
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-            <h3 className="text-lg font-semibold mb-1">{photo.title}</h3>
-            <p className="text-sm text-gray-300 mb-2 line-clamp-2">{photo.description}</p>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="flex items-center gap-1">
-                <EnvironmentOutlined />
-                {photo.location}
-              </span>
-              <span className="flex items-center gap-1">
-                <CalendarOutlined />
-                {new Date(photo.date).getFullYear()}
-              </span>
-            </div>
+    <motion.div
+      className={`group relative overflow-hidden rounded-xl bg-gray-800 cursor-pointer ${
+        span > 1 ? 'md:col-span-2' : ''
+      }`}
+      onClick={handleClick}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.3) }}
+      whileHover={{ y: -4 }}
+    >
+      {/* Image container with fixed aspect ratio */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {/* Loading skeleton */}
+        {!isLoaded && !hasError && (
+          <div className="absolute inset-0 bg-gray-700 animate-pulse flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-travel-blue-base border-t-transparent rounded-full animate-spin" />
           </div>
-          
-          {/* View icon */}
-          <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2">
+        )}
+
+        {/* Error state */}
+        {hasError && (
+          <div className="absolute inset-0 bg-gray-700 flex items-center justify-center">
+            <span className="text-gray-500 text-sm">Failed to load</span>
+          </div>
+        )}
+
+        {/* Actual image */}
+        <img
+          src={photo.imageUrl}
+          alt={photo.title}
+          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          loading="lazy"
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setHasError(true)}
+        />
+
+        {/* Overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* View icon */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
             <EyeOutlined className="text-white text-xl" />
           </div>
         </div>
 
         {/* Featured badge */}
         {photo.featured && (
-          <div className="absolute top-4 left-4 bg-gradient-to-r from-travel-earth-base to-travel-earth-light text-white px-3 py-1 rounded-full text-xs font-semibold">
+          <div className="absolute top-3 left-3 bg-travel-earth-base/90 text-white px-2 py-1 rounded text-xs font-medium">
             Featured
           </div>
         )}
       </div>
 
-      <Modal
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-        width="90%"
-        style={{ maxWidth: '1200px' }}
-        className="photo-modal"
-      >
-        <div className="bg-gray-800 rounded-lg overflow-hidden">
-          <img
-            src={photo.imageUrl}
-            alt={photo.title}
-            className="w-full h-auto max-h-[70vh] object-contain"
-          />
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-2">{photo.title}</h2>
-            <p className="text-gray-300 mb-4">{photo.description}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="flex items-center gap-2 text-gray-400">
-                <EnvironmentOutlined />
-                <span>{photo.location}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-400">
-                <CalendarOutlined />
-                <span>{new Date(photo.date).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-400">
-                <TagOutlined />
-                <span>{photo.category}</span>
-              </div>
-              <div className="text-gray-400">
-                <span className="font-semibold">Year:</span> {photo.year}
-              </div>
-            </div>
-            {photo.tags && photo.tags.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {photo.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-travel-blue-dark text-travel-blue-light rounded-full text-xs"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+      {/* Card info */}
+      <div className="p-4">
+        <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">{photo.title}</h3>
+        <div className="flex items-center gap-3 text-xs text-gray-400">
+          {photo.location && (
+            <span className="flex items-center gap-1">
+              <EnvironmentOutlined />
+              <span className="truncate max-w-[100px]">{photo.location}</span>
+            </span>
+          )}
+          {photo.date && (
+            <span className="flex items-center gap-1">
+              <CalendarOutlined />
+              {new Date(photo.date).getFullYear()}
+            </span>
+          )}
         </div>
-      </Modal>
-    </>
+      </div>
+    </motion.div>
   )
 }
 
 export default PhotoCard
-

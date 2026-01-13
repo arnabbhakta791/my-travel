@@ -3,7 +3,7 @@ import { Form, Input, Button, message } from 'antd'
 import { SendOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
 
-const ContactSection = () => {
+const ContactPage = () => {
   const [form] = Form.useForm()
 
   const onFinish = (values) => {
@@ -48,18 +48,17 @@ const ContactSection = () => {
   ]
 
   return (
-    <section id="contact" className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
+    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-16"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          animate="visible"
           variants={sectionVariants}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
             Get In Touch
-          </h2>
+          </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Have a question or want to collaborate? I'd love to hear from you!
           </p>
@@ -69,8 +68,7 @@ const ContactSection = () => {
           {/* Contact Information */}
           <motion.div
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
             variants={sectionVariants}
           >
             <h3 className="text-2xl font-bold text-white mb-6">Contact Information</h3>
@@ -80,8 +78,7 @@ const ContactSection = () => {
                   key={info.title}
                   className="flex items-start gap-4"
                   initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <motion.div
@@ -102,8 +99,7 @@ const ContactSection = () => {
             <motion.div
               className="mt-12 bg-gray-800 rounded-xl p-6 border border-gray-700"
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <h4 className="text-white font-semibold mb-3">Follow My Journey</h4>
@@ -135,8 +131,7 @@ const ContactSection = () => {
           <motion.div
             className="bg-gray-800 rounded-xl p-8 border border-gray-700"
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
             variants={sectionVariants}
             transition={{ delay: 0.2 }}
           >
@@ -216,8 +211,8 @@ const ContactSection = () => {
           </motion.div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 
-export default ContactSection
+export default ContactPage

@@ -1,21 +1,33 @@
+import { motion } from 'framer-motion'
 import PhotoCard from './PhotoCard'
 
-const PhotoGrid = ({ photos }) => {
-  // Create a mixed layout: some photos span 2 columns, others span 1
-  const getSpan = (index) => {
-    // Every 5th photo (starting from 3rd) spans 2 columns for visual interest
-    if ((index + 1) % 5 === 0) return 2
-    return 1
-  }
-
+const PhotoGrid = ({ photos, onOpenLightbox }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: {
+            staggerChildren: 0.08,
+          },
+        },
+      }}
+    >
       {photos.map((photo, index) => (
-        <PhotoCard key={photo._id || photo.id} photo={photo} span={getSpan(index)} />
+        <PhotoCard
+          key={photo._id}
+          photo={photo}
+          index={index}
+          span={photo.featured ? 2 : 1}
+          onOpenLightbox={onOpenLightbox}
+        />
       ))}
-    </div>
+    </motion.div>
   )
 }
 
 export default PhotoGrid
-

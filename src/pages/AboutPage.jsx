@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Row, Col, Statistic } from 'antd'
 import { GlobalOutlined, CameraOutlined, HeartOutlined } from '@ant-design/icons'
 
-const AboutSection = () => {
+const AboutPage = () => {
   const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: {
@@ -49,18 +49,17 @@ const AboutSection = () => {
   ]
 
   return (
-    <section id="about" className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-800">
+    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-800">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-16"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          animate="visible"
           variants={sectionVariants}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
             About Me
-          </h2>
+          </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             A passionate traveler and photographer capturing moments around the world
           </p>
@@ -72,16 +71,14 @@ const AboutSection = () => {
               <motion.div
                 className={`bg-gray-900 rounded-xl p-8 text-center border border-gray-700 ${card.borderHover} transition-all duration-300 hover:shadow-xl hover:shadow-travel-blue-dark/10`}
                 initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
+                animate="visible"
                 variants={cardVariants}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -5 }}
               >
                 <motion.div
                   initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
+                  animate={{ scale: 1 }}
                   transition={{ delay: 0.2 + index * 0.1, type: 'spring' }}
                 >
                   {card.icon}
@@ -106,8 +103,7 @@ const AboutSection = () => {
             <motion.div
               className="bg-gray-900 rounded-xl p-8 border border-gray-700 h-full flex flex-col hover:border-travel-blue-dark transition-colors"
               initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+              animate="visible"
               variants={cardVariants}
             >
               <h3 className="text-2xl font-bold text-white mb-4">My Story</h3>
@@ -131,8 +127,7 @@ const AboutSection = () => {
             <motion.div
               className="bg-gray-900 rounded-xl p-8 border border-gray-700 h-full flex flex-col hover:border-travel-green-dark transition-colors"
               initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+              animate="visible"
               variants={cardVariants}
               transition={{ delay: 0.1 }}
             >
@@ -156,8 +151,7 @@ const AboutSection = () => {
         <motion.div
           className="mt-16 text-center"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+          animate="visible"
           variants={sectionVariants}
         >
           <motion.div
@@ -166,12 +160,11 @@ const AboutSection = () => {
             transition={{ type: 'spring', stiffness: 300 }}
           >
             <motion.img
-              src="profile-pic.jpg"
+              src="/profile-pic.jpg"
               alt="Traveler"
               className="w-48 h-48 rounded-full object-cover mx-auto mb-4 border-4 border-travel-blue-base"
               initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
             />
             <h4 className="text-xl font-semibold text-white mb-2">The Traveler</h4>
@@ -179,8 +172,8 @@ const AboutSection = () => {
           </motion.div>
         </motion.div>
       </div>
-    </section>
+    </div>
   )
 }
 
-export default AboutSection
+export default AboutPage

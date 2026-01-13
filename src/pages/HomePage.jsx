@@ -1,15 +1,9 @@
 import { motion } from 'framer-motion'
 import { Button } from 'antd'
-import { ArrowDownOutlined } from '@ant-design/icons'
+import { ArrowRightOutlined } from '@ant-design/icons'
+import { Link } from 'react-router-dom'
 
-const HomeSection = () => {
-  const scrollToGallery = () => {
-    const element = document.getElementById('gallery')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
+const HomePage = () => {
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -32,10 +26,7 @@ const HomeSection = () => {
   }
 
   return (
-    <section
-      id="home"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-    >
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background with gradient overlay */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-travel-blue-dark via-gray-900 to-travel-green-dark opacity-90"
@@ -102,37 +93,39 @@ const HomeSection = () => {
           adventures around the globe.
         </motion.p>
 
-        <motion.div variants={itemVariants}>
-          <Button
-            type="primary"
-            size="large"
-            icon={<ArrowDownOutlined />}
-            onClick={scrollToGallery}
-            className="bg-gradient-to-r from-travel-blue-base to-travel-green-base border-none hover:from-travel-blue-light hover:to-travel-green-light h-12 px-8 text-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
-          >
-            Explore Gallery
-          </Button>
+        <motion.div variants={itemVariants} className="flex gap-4 justify-center flex-wrap">
+          <Link to="/gallery">
+            <Button
+              type="primary"
+              size="large"
+              icon={<ArrowRightOutlined />}
+              className="bg-gradient-to-r from-travel-blue-base to-travel-green-base border-none hover:from-travel-blue-light hover:to-travel-green-light h-12 px-8 text-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
+            >
+              Explore Gallery
+            </Button>
+          </Link>
+          <Link to="/about">
+            <Button
+              size="large"
+              className="h-12 px-8 text-lg font-semibold border-gray-600 text-gray-300 hover:border-travel-blue-base hover:text-travel-blue-light"
+            >
+              About Me
+            </Button>
+          </Link>
         </motion.div>
       </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
       >
-        <motion.div
-          className="flex flex-col items-center gap-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
-          <span className="text-gray-400 text-sm">Scroll to explore</span>
-          <ArrowDownOutlined className="text-2xl text-gray-400" />
-        </motion.div>
+        <span className="text-gray-400 text-sm">Scroll to see more</span>
       </motion.div>
-    </section>
+    </div>
   )
 }
 
-export default HomeSection
+export default HomePage

@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import FeaturedPhotos from './FeaturedPhotos'
-import FilterBar from './FilterBar'
-import PhotoGrid from './PhotoGrid'
-import ImageLightbox from '../ImageLightbox'
-import PageLoader from '../PageLoader'
-import SkeletonCard from '../SkeletonCard'
-import { apiClient } from '../../api/client'
+import FeaturedPhotos from '../components/GallerySection/FeaturedPhotos'
+import FilterBar from '../components/GallerySection/FilterBar'
+import PhotoGrid from '../components/GallerySection/PhotoGrid'
+import ImageLightbox from '../components/ImageLightbox'
+import SkeletonCard from '../components/SkeletonCard'
+import { apiClient } from '../api/client'
 
-const GallerySection = () => {
+const GalleryPage = () => {
   const [filters, setFilters] = useState({
     location: null,
     category: null,
@@ -18,7 +17,7 @@ const GallerySection = () => {
   const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
+
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
@@ -31,7 +30,6 @@ const GallerySection = () => {
         const res = await apiClient.get('/photos')
         setPhotos(res.data.items || [])
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Failed to load photos', err)
         setError('Failed to load photos')
       } finally {
@@ -87,18 +85,17 @@ const GallerySection = () => {
   }
 
   return (
-    <section id="gallery" className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
+    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-12"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          animate="visible"
           variants={sectionVariants}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
             Photo Gallery
-          </h2>
+          </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Explore my collection of travel photographs from around the world
           </p>
@@ -106,8 +103,7 @@ const GallerySection = () => {
 
         <motion.div
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+          animate="visible"
           variants={sectionVariants}
         >
           <FilterBar
@@ -202,8 +198,8 @@ const GallerySection = () => {
           onNavigate={handleNavigateLightbox}
         />
       </div>
-    </section>
+    </div>
   )
 }
 
-export default GallerySection
+export default GalleryPage
