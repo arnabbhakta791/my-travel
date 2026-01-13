@@ -6,7 +6,7 @@ const storage = multer.memoryStorage()
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
+    fileSize: 50 * 1024 * 1024, // 50MB
   },
 })
 
@@ -27,8 +27,8 @@ const createPhotoWithUpload = (req, res) => {
 
       const { title, description, location, country, date, category, tags, featured } = req.body
 
-      if (!title) {
-        return res.status(400).json({ message: 'Title is required' })
+      if (!location) {
+        return res.status(400).json({ message: 'Location is required' })
       }
 
       const uploadResult = await cloudinary.uploader.upload_stream(
