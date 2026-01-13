@@ -114,16 +114,6 @@ const HomePage = () => {
           </Link>
         </motion.div>
       </motion.div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <span className="text-gray-400 text-sm">Scroll to see more</span>
-      </motion.div>
     </div>
   )
 }

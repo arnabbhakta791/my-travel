@@ -1,22 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import FeaturedPhotos from '../components/GallerySection/FeaturedPhotos'
-import FilterBar from '../components/GallerySection/FilterBar'
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
 import PhotoGrid from '../components/GallerySection/PhotoGrid'
 import ImageLightbox from '../components/ImageLightbox'
 import SkeletonCard from '../components/SkeletonCard'
+import LocationTree from '../components/LocationTree'
+import FeaturedCarousel from '../components/FeaturedCarousel'
 import { apiClient } from '../api/client'
 
 const GalleryPage = () => {
-  const [filters, setFilters] = useState({
-    location: null,
-    category: null,
-    year: null,
-  })
-
+  const [selectedLocation, setSelectedLocation] = useState(null)
   const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -40,26 +38,10 @@ const GalleryPage = () => {
     fetchPhotos()
   }, [])
 
-  const locations = useMemo(() => {
-    return [...new Set(photos.map((p) => p.country).filter((loc) => loc != null && loc !== ''))].sort()
-  }, [photos])
-
-  const categories = useMemo(() => {
-    return [...new Set(photos.map((p) => p.category).filter((cat) => cat != null && cat !== ''))].sort()
-  }, [photos])
-
-  const years = useMemo(() => {
-    return [...new Set(photos.map((p) => p.year).filter((year) => year != null && year !== '' && !isNaN(year)))].sort((a, b) => b - a)
-  }, [photos])
-
   const filteredPhotos = useMemo(() => {
-    return photos.filter((photo) => {
-      if (filters.location && photo.country !== filters.location) return false
-      if (filters.category && photo.category !== filters.category) return false
-      if (filters.year && photo.year !== filters.year) return false
-      return true
-    })
-  }, [filters, photos])
+    if (!selectedLocation) return photos
+    return photos.filter((photo) => photo.location === selectedLocation)
+  }, [selectedLocation, photos])
 
   const handleOpenLightbox = (index) => {
     setCurrentPhotoIndex(index)
@@ -74,130 +56,186 @@ const GalleryPage = () => {
     setCurrentPhotoIndex(index)
   }
 
-  // Section animation variants
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' },
-    },
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location)
+    setMobileSidebarOpen(false)
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="text-center mb-12"
-          initial="hidden"
-          animate="visible"
-          variants={sectionVariants}
-        >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-travel-blue-light via-travel-green-base to-travel-earth-light bg-clip-text text-transparent">
-            Photo Gallery
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Explore my collection of travel photographs from around the world
-          </p>
-        </motion.div>
+    <div className="min-h-screen pt-16 bg-gray-900">
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <aside className={`hidden md:block flex-shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-0'}`}>
+          <div className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-gray-850 border-r border-gray-800 overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">Locations</h2>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1 text-gray-400 hover:text-white transition-colors"
+                >
+                  <CloseOutlined />
+                </button>
+              </div>
+              <LocationTree
+                locations={photos}
+                selectedLocation={selectedLocation}
+                onSelect={handleLocationSelect}
+              />
+            </div>
+          </div>
+        </aside>
 
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={sectionVariants}
-        >
-          <FilterBar
-            filters={filters}
-            onFilterChange={setFilters}
-            locations={locations}
-            categories={categories}
-            years={years}
-          />
-        </motion.div>
+        {/* Main content */}
+        <main className="flex-1 min-w-0">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6">
+              {/* Toggle sidebar button (desktop) */}
+              {!sidebarOpen && (
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="hidden md:flex p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <MenuOutlined />
+                </button>
+              )}
 
-        <AnimatePresence mode="wait">
-          {loading && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"
-            >
-              {[...Array(6)].map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </motion.div>
-          )}
-
-          {error && !loading && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-10"
-            >
-              <p className="text-red-400 text-lg">{error}</p>
+              {/* Mobile menu button */}
               <button
-                onClick={() => window.location.reload()}
-                className="mt-4 px-6 py-2 bg-travel-blue-base text-white rounded-lg hover:bg-travel-blue-light transition-colors"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
               >
-                Try Again
+                <MenuOutlined />
               </button>
-            </motion.div>
-          )}
 
-          {!loading && !error && (
-            <motion.div
-              key="content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <FeaturedPhotos photos={filteredPhotos} />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                  {selectedLocation || 'All Photos'}
+                </h1>
+                <p className="text-gray-400 text-sm mt-1">
+                  {filteredPhotos.length} {filteredPhotos.length === 1 ? 'photo' : 'photos'}
+                </p>
+              </div>
+            </div>
 
-              <div className="mb-6 mt-8">
-                <motion.p
-                  className="text-gray-400"
+            {/* Content */}
+            <AnimatePresence mode="wait">
+              {loading && (
+                <motion.div
+                  key="loading"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
                 >
-                  Showing {filteredPhotos.length}{' '}
-                  {filteredPhotos.length === 1 ? 'photo' : 'photos'}
-                </motion.p>
-              </div>
-
-              {filteredPhotos.length > 0 ? (
-                <PhotoGrid
-                  photos={filteredPhotos}
-                  onOpenLightbox={handleOpenLightbox}
-                />
-              ) : (
-                <motion.div
-                  className="text-center py-20"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                >
-                  <p className="text-gray-400 text-xl">
-                    No photos found matching your filters.
-                  </p>
+                  {[...Array(8)].map((_, i) => (
+                    <SkeletonCard key={i} />
+                  ))}
                 </motion.div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Lightbox */}
-        <ImageLightbox
-          photo={filteredPhotos[currentPhotoIndex]}
-          photos={filteredPhotos}
-          currentIndex={currentPhotoIndex}
-          isOpen={lightboxOpen}
-          onClose={handleCloseLightbox}
-          onNavigate={handleNavigateLightbox}
-        />
+              {error && !loading && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-10"
+                >
+                  <p className="text-red-400 text-lg">{error}</p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-6 py-2 bg-travel-blue-base text-white rounded-lg hover:bg-travel-blue-light transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </motion.div>
+              )}
+
+              {!loading && !error && (
+                <motion.div
+                  key="content"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {/* Featured Carousel - only when showing all locations */}
+                  {selectedLocation === null && (
+                    <FeaturedCarousel
+                      photos={filteredPhotos}
+                      onPhotoClick={handleOpenLightbox}
+                    />
+                  )}
+
+                  {filteredPhotos.length > 0 ? (
+                    <PhotoGrid
+                      photos={filteredPhotos}
+                      onOpenLightbox={handleOpenLightbox}
+                    />
+                  ) : (
+                    <div className="text-center py-20">
+                      <p className="text-gray-400 text-xl">No photos found for this location.</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {mobileSidebarOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setMobileSidebarOpen(false)}
+            />
+            
+            {/* Sidebar */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed top-0 left-0 bottom-0 w-72 bg-gray-900 border-r border-gray-800 z-50 md:hidden overflow-y-auto"
+            >
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-white">Locations</h2>
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="p-1 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <CloseOutlined />
+                  </button>
+                </div>
+                <LocationTree
+                  locations={photos}
+                  selectedLocation={selectedLocation}
+                  onSelect={handleLocationSelect}
+                />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox */}
+      <ImageLightbox
+        photo={filteredPhotos[currentPhotoIndex]}
+        photos={filteredPhotos}
+        currentIndex={currentPhotoIndex}
+        isOpen={lightboxOpen}
+        onClose={handleCloseLightbox}
+        onNavigate={handleNavigateLightbox}
+      />
     </div>
   )
 }

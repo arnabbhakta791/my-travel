@@ -179,7 +179,7 @@ const ImageLightbox = ({ photo, photos, currentIndex, isOpen, onClose, onNavigat
           {/* Image - maximized */}
           <motion.img
             src={photo.imageUrl}
-            alt={photo.title}
+            alt={photo.location || 'Photo'}
             className={`max-w-[95vw] max-h-[95vh] object-contain transition-opacity duration-200 ${
               isLoading ? 'opacity-0' : 'opacity-100'
             }`}
@@ -224,11 +224,6 @@ const ImageLightbox = ({ photo, photos, currentIndex, isOpen, onClose, onNavigat
 
                 {/* Drawer content */}
                 <div className="p-4 space-y-4">
-                  {/* Title */}
-                  <div>
-                    <h2 className="text-xl font-semibold text-white">{photo.title}</h2>
-                  </div>
-
                   {/* Description */}
                   {photo.description && (
                     <div>

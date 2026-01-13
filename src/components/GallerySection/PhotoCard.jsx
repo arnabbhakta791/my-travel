@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { EnvironmentOutlined, CalendarOutlined, EyeOutlined } from '@ant-design/icons'
+import { EyeOutlined } from '@ant-design/icons'
 
 const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -40,7 +40,7 @@ const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
         {/* Actual image */}
         <img
           src={photo.imageUrl}
-          alt={photo.title}
+          alt={photo.title || photo.location || 'Photo'}
           className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
@@ -50,7 +50,7 @@ const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
         />
 
         {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* View icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -65,25 +65,6 @@ const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
             Featured
           </div>
         )}
-      </div>
-
-      {/* Card info */}
-      <div className="p-4">
-        <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">{photo.title}</h3>
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          {photo.location && (
-            <span className="flex items-center gap-1">
-              <EnvironmentOutlined />
-              <span className="truncate max-w-[100px]">{photo.location}</span>
-            </span>
-          )}
-          {photo.date && (
-            <span className="flex items-center gap-1">
-              <CalendarOutlined />
-              {new Date(photo.date).getFullYear()}
-            </span>
-          )}
-        </div>
       </div>
     </motion.div>
   )
