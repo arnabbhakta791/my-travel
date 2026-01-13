@@ -35,6 +35,7 @@ const createPhotoWithUpload = (req, res) => {
         {
           folder: 'travel_gallery',
           resource_type: 'image',
+          format: 'jpg', // Convert HEIC and other formats to JPG
         },
         async (cloudErr, result) => {
           if (cloudErr) {
