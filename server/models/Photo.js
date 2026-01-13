@@ -2,9 +2,9 @@ import mongoose from 'mongoose'
 
 const PhotoSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true },
+    title: { type: String, trim: true },
     description: { type: String, trim: true },
-    location: { type: String, trim: true },
+    location: { type: String, required: true, trim: true },
     country: { type: String, trim: true },
     date: { type: Date },
     year: { type: Number },

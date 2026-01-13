@@ -108,7 +108,6 @@ const AdminDashboard = () => {
         const formData = new FormData()
         formData.append('image', file.originFileObj)
         formData.append('location', bulkLocation.trim())
-        formData.append('location', values.location)
 
         await apiClient.post('/admin/photos', formData, {
           headers: {
