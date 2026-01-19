@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { memo } from 'react'
 import PhotoCard from './PhotoCard'
 
 const PhotoGrid = ({ photos, onOpenLightbox }) => {
@@ -16,4 +16,6 @@ const PhotoGrid = ({ photos, onOpenLightbox }) => {
   )
 }
 
-export default PhotoGrid
+const MemoPhotoGrid = memo(PhotoGrid)
+MemoPhotoGrid.displayName = 'PhotoGrid'
+export default MemoPhotoGrid

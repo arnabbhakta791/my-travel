@@ -1,13 +1,29 @@
 import { motion } from 'framer-motion'
 import { EnvironmentOutlined } from '@ant-design/icons'
 
-const LocationTree = ({ locations, selectedLocation, onSelect }) => {
-  // Get unique locations from photos
-  const uniqueLocations = [...new Set(
-    locations
-      .map(photo => photo.location)
-      .filter(loc => loc != null && loc !== '')
-  )].sort()
+const LocationTree = ({ locations, locationStats, totalCount, selectedLocation, onSelect }) => {
+  const statsList = Array.isArray(locationStats) ? locationStats : null
+  const statsCountByLocation = statsList
+    ? statsList.reduce((acc, row) => {
+        if (row?.location) acc[row.location] = Number(row.count) || 0
+        return acc
+      }, {})
+    : null
+
+  const uniqueLocations = statsList
+    ? statsList.map((row) => row.location).filter((loc) => loc != null && loc !== '')
+    : [...new Set(
+        locations
+          .map((photo) => photo.location)
+          .filter((loc) => loc != null && loc !== '')
+      )].sort()
+
+  const getCountForLocation = (loc) => {
+    if (statsCountByLocation) return statsCountByLocation[loc] || 0
+    return locations.filter((p) => p.location === loc).length
+  }
+
+  const allCount = typeof totalCount === 'number' ? totalCount : locations.length
 
   const handleSelectAll = () => {
     onSelect(null)
@@ -30,7 +46,7 @@ const LocationTree = ({ locations, selectedLocation, onSelect }) => {
       >
         <EnvironmentOutlined />
         <span>All Locations</span>
-        <span className="text-xs text-gray-500 ml-auto">{locations.length}</span>
+        <span className="text-xs text-gray-500 ml-auto">{allCount}</span>
       </button>
 
       {/* Divider */}
@@ -38,7 +54,7 @@ const LocationTree = ({ locations, selectedLocation, onSelect }) => {
 
       {/* Location list */}
       {uniqueLocations.map((loc) => {
-        const count = locations.filter(p => p.location === loc).length
+        const count = getCountForLocation(loc)
         return (
           <motion.button
             key={loc}

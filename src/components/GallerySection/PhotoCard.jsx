@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { EyeOutlined } from '@ant-design/icons'
 
@@ -70,4 +70,6 @@ const PhotoCard = ({ photo, span = 1, index, onOpenLightbox }) => {
   )
 }
 
-export default PhotoCard
+const MemoPhotoCard = memo(PhotoCard)
+MemoPhotoCard.displayName = 'PhotoCard'
+export default MemoPhotoCard

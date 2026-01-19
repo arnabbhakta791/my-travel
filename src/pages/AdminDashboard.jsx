@@ -8,6 +8,8 @@ import { logout } from '../api/auth'
 const { Title } = Typography
 const { Dragger } = Upload
 
+const ADMIN_PAGE_SIZE = 200
+
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(false)
   const [photos, setPhotos] = useState([])
@@ -29,8 +31,29 @@ const AdminDashboard = () => {
   const fetchPhotos = async () => {
     try {
       setTableLoading(true)
-      const res = await apiClient.get('/photos')
-      setPhotos(res.data.items || [])
+      let all = []
+      let currentPage = 1
+      let total = Infinity
+
+      while (all.length < total) {
+        // eslint-disable-next-line no-await-in-loop
+        const res = await apiClient.get('/photos', {
+          params: {
+            page: currentPage,
+            limit: ADMIN_PAGE_SIZE,
+          },
+        })
+
+        const items = res?.data?.items || []
+        const apiTotal = Number(res?.data?.total)
+        total = Number.isFinite(apiTotal) ? apiTotal : all.length + items.length
+
+        all = [...all, ...items]
+        if (items.length === 0) break
+        currentPage += 1
+      }
+
+      setPhotos(all)
     } catch (err) {
       console.error('Fetch photos failed', err)
       message.error('Failed to load photos')
